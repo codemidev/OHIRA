@@ -1,0 +1,535 @@
+OHIRA-0002
+
+Product Requirements Document (PRD)
+
+Project Name: Ohira
+
+Version: 1.0
+
+Status: Founder's Draft
+
+Document ID: OHIRA-0002
+
+
+---
+
+Executive Summary
+
+Ohira is an open, AI-first Developer Intelligence Platform that continuously analyzes software projects and transforms source code, infrastructure, documentation, and development workflows into a unified knowledge model.
+
+Unlike traditional documentation tools, Ohira acts as a living intelligence layer that enables developers, engineering teams, and AI assistants to understand software systems quickly and accurately.
+
+The platform combines static analysis, project metadata, plugins, and AI-ready outputs into one extensible ecosystem.
+
+
+---
+
+Problem Statement
+
+Modern software development suffers from fragmented knowledge:
+
+Documentation becomes outdated.
+
+New developers require weeks to onboard.
+
+AI assistants repeatedly analyze the same repositories.
+
+Engineering decisions are scattered across code, Git history, issue trackers, and conversations.
+
+Project health is difficult to measure consistently.
+
+
+Organizations lose valuable knowledge whenever developers leave or projects evolve without synchronized documentation.
+
+Ohira addresses these challenges by continuously maintaining an up-to-date understanding of software projects.
+
+
+---
+
+Vision
+
+To become the universal intelligence layer for software projects, enabling humans and AI systems to collaborate with complete project context.
+
+
+---
+
+Mission
+
+To make every software project understandable through structured knowledge rather than scattered information.
+
+
+---
+
+Product Goals
+
+Primary Goals
+
+Analyze software projects automatically.
+
+Build a unified project knowledge model.
+
+Expose structured project intelligence through APIs and CLI tools.
+
+Enable seamless AI integration.
+
+Reduce developer onboarding time.
+
+Automate project reporting.
+
+
+
+---
+
+Non-Goals (Version 1)
+
+The initial release will not include:
+
+AI code generation
+
+Cloud deployment services
+
+Source code hosting
+
+CI/CD orchestration
+
+Code editing
+
+Package management
+
+Project management features (Kanban, issues, etc.)
+
+
+These may be considered in future releases.
+
+
+---
+
+Target Users
+
+Individual Developers
+
+Need fast project understanding.
+
+
+---
+
+Startup Teams
+
+Require documentation and onboarding automation.
+
+
+---
+
+Software Agencies
+
+Need consistent reporting across multiple client projects.
+
+
+---
+
+Enterprise Engineering Teams
+
+Require visibility into architecture, dependencies, and engineering health.
+
+
+---
+
+AI Development Platforms
+
+Need structured context instead of scanning repositories repeatedly.
+
+
+---
+
+User Personas
+
+1. Solo Developer
+
+"I want to understand my project after returning months later."
+
+
+---
+
+2. Engineering Manager
+
+"I want visibility into project health without reading thousands of lines of code."
+
+
+---
+
+3. New Team Member
+
+"I want to understand the architecture in one afternoon instead of two weeks."
+
+
+---
+
+4. AI Assistant
+
+"I need structured context to provide accurate recommendations."
+
+
+---
+
+Functional Requirements
+
+Project Discovery
+
+Ohira shall:
+
+Detect project type.
+
+Detect programming language.
+
+Detect framework.
+
+Detect package manager.
+
+Detect repository information.
+
+
+
+---
+
+Project Analysis
+
+Analyze:
+
+Folder structure
+
+Dependencies
+
+Routes
+
+APIs
+
+Environment configuration
+
+Databases
+
+ORMs
+
+Containers
+
+Authentication
+
+Testing
+
+CI/CD
+
+
+
+---
+
+Knowledge Graph
+
+Build relationships between:
+
+Files
+
+Modules
+
+Services
+
+APIs
+
+Models
+
+Dependencies
+
+Teams
+
+Features
+
+
+
+---
+
+Reporting
+
+Generate:
+
+Markdown reports
+
+JSON reports
+
+HTML reports
+
+Project summaries
+
+Technical documentation
+
+
+
+---
+
+REST API
+
+Provide endpoints such as:
+
+GET /status
+GET /health
+GET /context
+GET /report
+GET /plugins
+POST /analyze
+
+
+---
+
+CLI
+
+Support commands like:
+
+ohira init
+
+ohira analyze
+
+ohira report
+
+ohira doctor
+
+ohira context
+
+ohira plugins
+
+ohira update
+
+
+---
+
+Plugin System
+
+Allow plugins to:
+
+Detect frameworks
+
+Analyze databases
+
+Parse Docker
+
+Parse Git
+
+Parse Kubernetes
+
+Parse Terraform
+
+Parse CI/CD
+
+Generate custom reports
+
+
+
+---
+
+Non-Functional Requirements
+
+Performance
+
+Analyze medium projects in under 30 seconds.
+
+Incremental analysis for large projects.
+
+Low memory usage.
+
+
+
+---
+
+Reliability
+
+Fault-tolerant plugin execution.
+
+Graceful handling of unsupported technologies.
+
+
+
+---
+
+Extensibility
+
+Every analyzer should be implemented as a plugin.
+
+
+---
+
+Security
+
+Local-first analysis.
+
+No project data transmitted unless explicitly configured.
+
+Support self-hosted deployments.
+
+
+
+---
+
+Cross-Platform
+
+Support:
+
+Windows
+
+macOS
+
+Linux
+
+
+
+---
+
+MVP Scope (Version 0.1)
+
+Core Engine
+
+Project scanner
+
+Technology detector
+
+Plugin loader
+
+Knowledge model
+
+Report generator
+
+
+CLI
+
+init
+
+analyze
+
+report
+
+context
+
+doctor
+
+
+API
+
+health
+
+status
+
+context
+
+report
+
+
+Supported Technologies
+
+Node.js
+
+TypeScript
+
+JavaScript
+
+Next.js
+
+React
+
+Express
+
+Prisma
+
+Docker
+
+Git
+
+
+
+---
+
+Success Metrics
+
+Within six months of launch:
+
+1,000 GitHub stars
+
+100 active projects using Ohira
+
+20 community plugins
+
+10 external contributors
+
+Sub-30 second analysis for typical projects
+
+
+
+---
+
+Future Roadmap
+
+Version 0.5
+
+Dashboard
+
+Architecture visualization
+
+Knowledge graph explorer
+
+Team analytics
+
+
+
+---
+
+Version 1.0
+
+AI Context Engine
+
+Plugin Marketplace
+
+Multi-project workspaces
+
+Project timelines
+
+Web dashboard
+
+
+
+---
+
+Version 2.0
+
+Enterprise features
+
+Multi-repository intelligence
+
+Engineering metrics
+
+AI review assistant
+
+Cloud synchronization
+
+Organization-wide insights
+
+
+
+---
+
+Risks
+
+Supporting too many frameworks too early.
+
+Performance on very large repositories.
+
+Maintaining compatibility with evolving tools.
+
+Community plugin quality and security.
+
+
+
+---
+
+Guiding Principle
+
+Every feature added to Ohira must answer one question:
+
+> Does this help developers or AI understand a software project more quickly, accurately, or reliably?
+
+
+
+If the answer is no, it doesn't belong in the core platform.
