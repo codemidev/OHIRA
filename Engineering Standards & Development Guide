@@ -1,0 +1,649 @@
+OHIRA-0010
+
+Engineering Standards & Development Guide
+
+Project: Ohira
+
+Document ID: OHIRA-0010
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+This document establishes the engineering standards, workflows, and quality expectations for everyone contributing to Ohira.
+
+Its goals are to:
+
+Maintain a high-quality codebase.
+
+Ensure consistency across packages.
+
+Reduce technical debt.
+
+Make onboarding contributors straightforward.
+
+Enable predictable releases.
+
+
+
+---
+
+Engineering Principles
+
+Simplicity First
+
+Choose the simplest solution that satisfies the current requirements.
+
+Avoid adding abstractions until there is a demonstrated need.
+
+
+---
+
+Modular Design
+
+Each package should have one clear responsibility.
+
+Packages communicate only through public interfaces.
+
+
+---
+
+Stable Public APIs
+
+Public interfaces should remain stable across minor releases.
+
+Breaking changes require a major version bump.
+
+
+---
+
+Test Before Merge
+
+No feature is complete without automated tests.
+
+
+---
+
+Documentation Is Part of the Feature
+
+Every new feature should include:
+
+Code documentation
+
+User documentation (when applicable)
+
+API updates (if applicable)
+
+Changelog entry
+
+
+
+---
+
+Technology Stack
+
+Core language:
+
+TypeScript (strict mode)
+
+
+Runtime:
+
+Node.js (Active LTS)
+
+
+Package manager:
+
+pnpm
+
+
+Build system:
+
+Turborepo
+
+
+Testing:
+
+Vitest
+
+
+Linting:
+
+ESLint
+
+
+Formatting:
+
+Prettier
+
+
+Git hooks:
+
+Husky
+
+
+Commit linting:
+
+Commitlint
+
+
+
+---
+
+Repository Standards
+
+Each package should contain:
+
+src/
+tests/
+README.md
+package.json
+tsconfig.json
+
+Avoid mixing documentation and implementation files in the same directory.
+
+
+---
+
+Folder Naming
+
+Use lowercase with hyphens where appropriate.
+
+Examples:
+
+plugin-loader
+context-engine
+report-generator
+knowledge-graph
+
+Avoid ambiguous names like:
+
+helpers
+utils2
+misc
+temp
+
+
+---
+
+File Naming
+
+Prefer descriptive names.
+
+Good:
+
+plugin-manager.ts
+knowledge-node.ts
+analysis-context.ts
+
+Avoid:
+
+manager.ts
+index2.ts
+new.ts
+
+
+---
+
+TypeScript Standards
+
+Always enable strict mode.
+
+Prefer explicit types for public APIs.
+
+Avoid any except when unavoidable.
+
+Example:
+
+export interface AnalysisResult {
+  duration: number;
+  nodes: KnowledgeNode[];
+}
+
+
+---
+
+Function Design
+
+Functions should:
+
+Perform one task.
+
+Have descriptive names.
+
+Avoid hidden side effects.
+
+Return predictable values.
+
+
+Example:
+
+Good:
+
+generateKnowledgeGraph()
+
+Avoid:
+
+doStuff()
+
+
+---
+
+Error Handling
+
+Never silently ignore errors.
+
+Use typed error classes.
+
+Example:
+
+class PluginLoadError extends Error {}
+class AnalysisError extends Error {}
+class ConfigurationError extends Error {}
+
+Errors should include actionable messages.
+
+
+---
+
+Logging
+
+Supported log levels:
+
+TRACE
+
+DEBUG
+
+INFO
+
+WARN
+
+ERROR
+
+
+Avoid console.log() in production code. Use the centralized logger.
+
+
+---
+
+Git Workflow
+
+Main branches:
+
+main
+develop
+
+Feature branches:
+
+feature/plugin-prisma
+feature/knowledge-graph
+feature/rest-api
+
+Bug fixes:
+
+fix/context-engine
+
+Documentation:
+
+docs/api-spec
+
+
+---
+
+Commit Convention
+
+Use Conventional Commits.
+
+Examples:
+
+feat(core): add plugin scheduler
+
+fix(cli): handle invalid config
+
+docs(prd): update roadmap
+
+test(graph): add relationship tests
+
+refactor(core): simplify pipeline
+
+
+---
+
+Pull Requests
+
+Each pull request should include:
+
+Summary
+
+Motivation
+
+Screenshots (if UI changes)
+
+Tests added or updated
+
+Documentation updates
+
+Linked issue (if applicable)
+
+
+At least one review is recommended before merging.
+
+
+---
+
+Testing Strategy
+
+Minimum expectations:
+
+Unit tests for core logic.
+
+Integration tests for plugin interactions.
+
+End-to-end tests for CLI commands.
+
+
+Coverage targets:
+
+Core Engine: ≥90%
+
+SDK: ≥90%
+
+Plugins: ≥80%
+
+CLI: ≥80%
+
+
+Coverage is a guide, not the only measure of quality.
+
+
+---
+
+Documentation Standards
+
+Every public function should include TSDoc.
+
+Example:
+
+/**
+ * Builds the project knowledge graph.
+ *
+ * @param context Analysis context.
+ * @returns Generated knowledge graph.
+ */
+
+Complex architectural decisions should be recorded in documentation.
+
+
+---
+
+Dependency Management
+
+Rules:
+
+Prefer small, well-maintained dependencies.
+
+Avoid duplicate libraries.
+
+Remove unused dependencies promptly.
+
+Review dependency licenses before adoption.
+
+
+
+---
+
+Performance Standards
+
+Startup time:
+
+CLI under 200 ms.
+
+
+Analysis:
+
+Medium projects under 30 seconds.
+
+
+Memory:
+
+Avoid unnecessary copies of project data.
+
+Stream large datasets when practical.
+
+
+
+---
+
+Security Standards
+
+Never log secrets.
+
+Mask environment variables.
+
+Validate all external input.
+
+Sanitize file paths.
+
+Follow the principle of least privilege for plugins.
+
+
+Future releases will include automated security scanning.
+
+
+---
+
+Code Review Checklist
+
+Reviewers should verify:
+
+Correctness
+
+Readability
+
+Performance
+
+Test coverage
+
+Documentation
+
+Error handling
+
+Backward compatibility
+
+Security implications
+
+
+
+---
+
+Release Process
+
+1. Merge into develop.
+
+
+2. Run CI pipeline.
+
+
+3. Create release candidate.
+
+
+4. Validate manually.
+
+
+5. Merge into main.
+
+
+6. Tag release.
+
+
+7. Publish packages.
+
+
+8. Publish release notes.
+
+
+
+
+---
+
+Decision Records
+
+Major architectural decisions should be documented as Architecture Decision Records (ADRs).
+
+Suggested structure:
+
+docs/adr/
+├── ADR-001-plugin-system.md
+├── ADR-002-knowledge-graph.md
+├── ADR-003-cache-strategy.md
+
+Each ADR should explain:
+
+Context
+
+Decision
+
+Alternatives considered
+
+Consequences
+
+
+This provides historical context for future contributors.
+
+
+---
+
+Contributor Journey
+
+A new contributor should be able to:
+
+1. Clone the repository.
+
+
+2. Install dependencies.
+
+
+3. Run tests.
+
+
+4. Build the project.
+
+
+5. Make a change.
+
+
+6. Submit a pull request.
+
+
+
+The process should take less than one hour for someone familiar with TypeScript.
+
+
+---
+
+Definition of Done
+
+A task is considered complete when:
+
+Implementation is finished.
+
+Tests pass.
+
+Documentation is updated.
+
+Linting passes.
+
+Type checking passes.
+
+Code review is complete.
+
+CI pipeline succeeds.
+
+
+
+---
+
+Engineering Culture
+
+Ohira values:
+
+Clarity over cleverness.
+
+Reliability over speed of implementation.
+
+Maintainability over short-term convenience.
+
+Community collaboration over closed development.
+
+Measured evolution over constant reinvention.
+
+
+
+---
+
+Guiding Principle
+
+> "Great software is built by disciplined engineering, not just brilliant ideas."
+
+
+
+Every contribution should leave the project in a better state than it was found.
+
+
+---
+
+Roadmap to Implementation
+
+With OHIRA-0010, the foundational documentation is largely complete. We now have:
+
+✅ Vision & Manifesto
+
+✅ Product Requirements Document
+
+✅ System Architecture
+
+✅ Monorepo Specification
+
+✅ Plugin SDK
+
+✅ Knowledge Graph
+
+✅ CLI Specification
+
+✅ REST API Specification
+
+✅ Core Engine Specification
+
+✅ Engineering Standards
+
+
+What Comes Next
+
+This is where the project shifts from planning to execution.
+
+The next phase should be OHIRA-1000: Implementation, where we:
+
+1. Scaffold the Turborepo monorepo.
+
+
+2. Build @ohira/core.
+
+
+3. Build @ohira/sdk.
+
+
+4. Build @ohira/cli.
+
+
+5. Implement the first plugins (git, node, typescript, next, prisma, docker).
+
+
+6. Build the Knowledge Graph engine.
+
+
+7. Release Ohira v0.1.0-alpha.
