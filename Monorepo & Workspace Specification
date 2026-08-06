@@ -1,0 +1,509 @@
+OHIRA-0004
+
+Monorepo & Workspace Specification
+
+Project: Ohira
+
+Document ID: OHIRA-0004
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+This document defines the repository structure, workspace organization, package responsibilities, dependency rules, coding conventions, and development workflow for Ohira.
+
+The goals are:
+
+Keep the codebase modular.
+
+Enable independent package development.
+
+Support community contributions.
+
+Simplify testing and releases.
+
+Allow Ohira to evolve from a CLI into a complete platform.
+
+
+
+---
+
+Repository Structure
+
+ohira/
+│
+├── apps/
+│   ├── dashboard/
+│   ├── docs/
+│   ├── website/
+│   └── api/
+│
+├── packages/
+│   ├── core/
+│   ├── cli/
+│   ├── sdk/
+│   ├── knowledge/
+│   ├── reporter/
+│   ├── context/
+│   ├── shared/
+│   └── plugins/
+│       ├── git/
+│       ├── docker/
+│       ├── next/
+│       ├── prisma/
+│       ├── clerk/
+│       ├── express/
+│       ├── react/
+│       ├── node/
+│       └── typescript/
+│
+├── templates/
+│
+├── examples/
+│
+├── tests/
+│
+├── docs/
+│
+├── scripts/
+│
+├── .github/
+│
+├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
+├── tsconfig.base.json
+└── README.md
+
+
+---
+
+Workspace Philosophy
+
+Each package has one clear responsibility.
+
+Packages communicate through public APIs only. Internal implementation details remain private.
+
+
+---
+
+Apps
+
+dashboard
+
+The web interface for viewing project reports, architecture, plugins, and AI insights.
+
+
+---
+
+api
+
+Hosts the Ohira REST API, exposing endpoints such as:
+
+GET /status
+GET /context
+GET /report
+POST /analyze
+
+
+---
+
+docs
+
+Documentation website built with a static site generator (for example, Next.js with MDX).
+
+
+---
+
+website
+
+Marketing site containing product information, roadmap, and download links.
+
+
+---
+
+Packages
+
+core
+
+The orchestration engine.
+
+Responsibilities:
+
+Load configuration
+
+Discover plugins
+
+Run analysis pipeline
+
+Build the knowledge graph
+
+Handle caching and errors
+
+
+No framework-specific logic belongs here.
+
+
+---
+
+cli
+
+Implements commands such as:
+
+ohira init
+ohira analyze
+ohira report
+ohira doctor
+ohira plugins
+
+
+---
+
+sdk
+
+Defines the public interfaces used by plugin authors.
+
+Includes:
+
+Plugin interfaces
+
+Collector interfaces
+
+Event system
+
+Utility helpers
+
+
+
+---
+
+knowledge
+
+Defines:
+
+Entity models
+
+Relationships
+
+Graph builders
+
+Query utilities
+
+
+This package is the heart of Ohira's intelligence model.
+
+
+---
+
+reporter
+
+Responsible for generating:
+
+Markdown
+
+HTML
+
+JSON
+
+
+Future:
+
+PDF
+
+OpenAPI
+
+Architecture diagrams
+
+
+
+---
+
+context
+
+Produces optimized project context for AI systems.
+
+Supports different output profiles for:
+
+ChatGPT
+
+Claude
+
+Gemini
+
+Cursor
+
+GitHub Copilot
+
+
+
+---
+
+shared
+
+Contains reusable:
+
+Utilities
+
+Constants
+
+Types
+
+Logging
+
+Configuration
+
+Error classes
+
+
+No business logic should live here.
+
+
+---
+
+Plugin Packages
+
+Each plugin follows the same structure.
+
+Example:
+
+packages/plugins/prisma/
+
+src/
+├── collector.ts
+├── analyzer.ts
+├── mapper.ts
+├── types.ts
+├── index.ts
+└── plugin.ts
+
+
+---
+
+Package Dependency Rules
+
+Allowed:
+
+CLI
+    ↓
+Core
+    ↓
+SDK
+    ↓
+Shared
+
+Plugins
+    ↓
+SDK
+
+Reporter
+    ↓
+Knowledge
+
+Not allowed:
+
+Plugins importing other plugins.
+
+Core importing plugins directly.
+
+Shared depending on application packages.
+
+Circular dependencies.
+
+
+
+---
+
+Build System
+
+Recommended tools:
+
+pnpm for package management
+
+Turborepo for build orchestration
+
+TypeScript Project References for fast incremental builds
+
+ESLint for linting
+
+Prettier for formatting
+
+Vitest for testing
+
+
+
+---
+
+Naming Conventions
+
+Packages:
+
+@ohira/core
+@ohira/cli
+@ohira/sdk
+@ohira/context
+
+Plugins:
+
+@ohira/plugin-prisma
+@ohira/plugin-next
+@ohira/plugin-git
+@ohira/plugin-docker
+
+
+---
+
+Branching Strategy
+
+Main branches:
+
+main
+develop
+
+Feature branches:
+
+feature/plugin-prisma
+feature/rest-api
+feature/dashboard
+
+Bug fixes:
+
+fix/context-engine
+
+Documentation:
+
+docs/prd-update
+
+
+---
+
+Release Strategy
+
+Semantic Versioning:
+
+0.1.0
+0.2.0
+0.5.0
+1.0.0
+
+Patch: bug fixes
+
+Minor: new features
+
+Major: breaking changes
+
+
+
+---
+
+Testing Strategy
+
+Every package should include:
+
+Unit tests
+
+Integration tests (where applicable)
+
+
+Core and plugins should also have compatibility tests to ensure they work together.
+
+
+---
+
+Coding Standards
+
+TypeScript in strict mode.
+
+Public APIs documented with TSDoc.
+
+Functions should be small and focused.
+
+Prefer composition over inheritance.
+
+Avoid global mutable state.
+
+Keep packages framework-agnostic where possible.
+
+
+
+---
+
+Continuous Integration
+
+Each pull request should run:
+
+1. Install dependencies
+
+
+2. Type check
+
+
+3. Lint
+
+
+4. Unit tests
+
+
+5. Integration tests
+
+
+6. Build affected packages
+
+
+
+No code should be merged if any required check fails.
+
+
+---
+
+Contributor Experience
+
+A new contributor should be able to:
+
+pnpm install
+pnpm build
+pnpm test
+pnpm dev
+
+and have a working development environment in a few minutes.
+
+
+---
+
+Future Growth
+
+This monorepo structure is designed to support future additions such as:
+
+VS Code extension
+
+JetBrains plugin
+
+MCP server
+
+GitHub App
+
+Desktop application
+
+Mobile companion app
+
+Cloud synchronization service
+
+Enterprise edition
+
+
+without restructuring the repository.
+
+
+---
+
+Guiding Principle
+
+> "Small packages. Clear responsibilities. Stable interfaces."
+
+
+
+By keeping packages focused and loosely coupled, Ohira can grow from a single CLI tool into a robust developer platform while remaining maintainable.
