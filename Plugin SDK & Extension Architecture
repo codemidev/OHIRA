@@ -1,0 +1,510 @@
+OHIRA-0005
+
+Plugin SDK & Extension Architecture
+
+Project: Ohira
+
+Document ID: OHIRA-0005
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+The Plugin SDK defines how external developers can extend Ohira without modifying the core platform.
+
+The SDK provides a stable contract for:
+
+Framework plugins
+
+Database plugins
+
+Cloud plugins
+
+Authentication plugins
+
+Infrastructure plugins
+
+AI integrations
+
+Report generators
+
+Custom analyzers
+
+
+The goal is to make Ohira extensible by design.
+
+
+---
+
+Design Principles
+
+1. Core Never Changes
+
+New technologies should be added by installing plugins—not by changing the Ohira Core.
+
+Examples:
+
+@ohira/plugin-next
+@ohira/plugin-prisma
+@ohira/plugin-react
+@ohira/plugin-go
+@ohira/plugin-django
+
+
+---
+
+2. One Plugin, One Responsibility
+
+Each plugin should focus on a single technology.
+
+For example:
+
+Next.js plugin → Next.js only
+
+Prisma plugin → Prisma only
+
+Docker plugin → Docker only
+
+
+Avoid combining unrelated technologies into a single plugin.
+
+
+---
+
+3. Safe Execution
+
+Plugins run in isolation.
+
+If one plugin fails:
+
+Log the error.
+
+Mark the plugin as failed.
+
+Continue analysis with the remaining plugins.
+
+
+A faulty plugin must never stop the entire analysis process.
+
+
+---
+
+Plugin Lifecycle
+
+Install
+   │
+Discover
+   │
+Validate
+   │
+Initialize
+   │
+Analyze
+   │
+Generate Knowledge
+   │
+Report Results
+   │
+Unload
+
+Each stage has a defined interface and lifecycle hook.
+
+
+---
+
+Plugin Manifest
+
+Every plugin includes a manifest describing its metadata.
+
+Example:
+
+{
+  "id": "@ohira/plugin-prisma",
+  "name": "Prisma Plugin",
+  "version": "1.0.0",
+  "author": "Ohira Team",
+  "description": "Analyzes Prisma schemas and migrations.",
+  "requires": {
+    "ohira": "^1.0.0"
+  }
+}
+
+
+---
+
+Standard Plugin Interface
+
+Every plugin implements the same contract:
+
+export interface OhiraPlugin {
+  id: string;
+  name: string;
+  version: string;
+
+  supports(project: Project): Promise<boolean>;
+
+  initialize(context: PluginContext): Promise<void>;
+
+  analyze(context: AnalysisContext): Promise<KnowledgeNode[]>;
+
+  dispose(): Promise<void>;
+}
+
+This guarantees that plugins can be loaded consistently by the Core Engine.
+
+
+---
+
+Plugin Context
+
+Each plugin receives a context object containing:
+
+Project root
+
+Configuration
+
+Logger
+
+File system utilities
+
+Cache manager
+
+Event bus
+
+Shared services
+
+
+Plugins should never access global state directly.
+
+
+---
+
+Events
+
+Plugins can subscribe to lifecycle events.
+
+Examples:
+
+project.loaded
+
+analysis.started
+
+analysis.completed
+
+report.generated
+
+plugin.loaded
+
+plugin.failed
+
+Future versions may expose a richer event system.
+
+
+---
+
+Collectors
+
+A collector extracts structured information from a specific technology.
+
+Example:
+
+export interface Collector {
+    collect(): Promise<KnowledgeNode[]>;
+}
+
+Collectors should only collect data—they should not perform reporting or business logic.
+
+
+---
+
+Analyzers
+
+Analyzers transform collected data into meaningful insights.
+
+For example:
+
+Collector:
+
+Found 18 API routes.
+
+Analyzer:
+
+All admin routes require authentication.
+
+Collectors gather facts.
+
+Analyzers derive insights.
+
+
+---
+
+Mappers
+
+Mappers convert raw technology-specific data into Ohira's common knowledge model.
+
+Example:
+
+Prisma model:
+
+model User
+
+becomes:
+
+{
+  "type": "Entity",
+  "name": "User"
+}
+
+This allows every plugin to contribute to a shared vocabulary.
+
+
+---
+
+Permissions
+
+Plugins should explicitly declare the resources they require.
+
+Examples:
+
+{
+  "permissions": [
+    "filesystem.read",
+    "git.read",
+    "docker.inspect"
+  ]
+}
+
+Future versions may allow users to approve or deny permissions.
+
+
+---
+
+Dependency Rules
+
+Plugins may depend on:
+
+SDK
+
+Shared utilities
+
+
+Plugins must not depend on:
+
+Other plugins
+
+Internal Core implementation
+
+Dashboard
+
+CLI
+
+
+This keeps the plugin ecosystem loosely coupled.
+
+
+---
+
+Plugin Discovery
+
+Ohira discovers plugins from:
+
+node_modules/
+
+Local plugins/
+
+Workspace plugins/
+
+In the future:
+
+Official Marketplace
+
+Enterprise registries
+
+
+
+---
+
+Plugin Categories
+
+Framework Plugins
+
+Next.js
+
+React
+
+Vue
+
+Angular
+
+Laravel
+
+Database Plugins
+
+Prisma
+
+Drizzle
+
+TypeORM
+
+Mongoose
+
+Infrastructure Plugins
+
+Docker
+
+Kubernetes
+
+Terraform
+
+Authentication Plugins
+
+Clerk
+
+Auth.js
+
+Firebase Auth
+
+Cloud Plugins
+
+AWS
+
+Azure
+
+Google Cloud
+
+Vercel
+
+Testing Plugins
+
+Vitest
+
+Jest
+
+Playwright
+
+Cypress
+
+Documentation Plugins
+
+OpenAPI
+
+Swagger
+
+MDX
+
+
+---
+
+Version Compatibility
+
+Plugins declare compatible Ohira versions.
+
+Example:
+
+{
+  "peerDependencies": {
+    "@ohira/core": "^1.0.0"
+  }
+}
+
+The Plugin Loader validates compatibility before loading.
+
+
+---
+
+Error Handling
+
+If a plugin throws an exception:
+
+1. Capture the error.
+
+
+2. Log diagnostic information.
+
+
+3. Skip the failing plugin.
+
+
+4. Continue the remaining analysis.
+
+
+
+The user receives a summary of any plugin failures.
+
+
+---
+
+Plugin Marketplace (Future)
+
+The ecosystem may include a marketplace where developers can:
+
+Publish plugins
+
+Install plugins
+
+Rate plugins
+
+Report issues
+
+View documentation
+
+
+Example commands:
+
+ohira plugin search prisma
+ohira plugin install @ohira/plugin-prisma
+ohira plugin update
+ohira plugin remove @ohira/plugin-prisma
+
+
+---
+
+SDK Goals
+
+The SDK should enable developers to create new plugins quickly without understanding the internals of Ohira.
+
+A new plugin should be possible to scaffold and run within minutes.
+
+
+---
+
+Guiding Principle
+
+> "The Core provides the platform. The community provides the knowledge."
+
+
+
+This philosophy ensures that Ohira can grow to support hundreds of technologies without making the Core Engine large or difficult to maintain.
+
+
+---
+
+MVP Plugin Set
+
+For the first public release, we'll officially support:
+
+@ohira/plugin-git
+
+@ohira/plugin-node
+
+@ohira/plugin-typescript
+
+@ohira/plugin-next
+
+@ohira/plugin-react
+
+@ohira/plugin-express
+
+@ohira/plugin-prisma
+
+@ohira/plugin-docker
+
+@ohira/plugin-clerk
+
+
+These plugins directly align with the technologies you've already been using to build Smart Property, giving us a practical environment to validate the SDK before expanding to additional ecosystems.
