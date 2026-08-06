@@ -1,0 +1,607 @@
+OHIRA-0008
+
+REST API & Integration Specification
+
+Project: Ohira
+
+Document ID: OHIRA-0008
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+The Ohira REST API exposes project intelligence to external systems.
+
+Rather than forcing applications to understand a project's source code, they consume structured knowledge through stable HTTP endpoints.
+
+Consumers include:
+
+Web applications
+
+Mobile applications
+
+VS Code Extension
+
+JetBrains Plugin
+
+GitHub App
+
+MCP Server
+
+AI Assistants
+
+CI/CD Pipelines
+
+Smart Property
+
+Future third-party integrations
+
+
+
+---
+
+API Design Principles
+
+Resource-Oriented
+
+Every endpoint represents a resource.
+
+Examples:
+
+/projects
+/analysis
+/plugins
+/context
+/reports
+
+
+---
+
+Versioned
+
+Every public API is versioned.
+
+/api/v1
+
+Future:
+
+/api/v2
+
+Breaking changes must never affect existing clients.
+
+
+---
+
+JSON First
+
+All endpoints return JSON by default.
+
+Future support:
+
+YAML
+
+Markdown
+
+NDJSON (streaming)
+
+
+
+---
+
+Stateless
+
+Every request contains all required information.
+
+The server should never rely on in-memory client state.
+
+
+---
+
+API Architecture
+
+Client
+    │
+HTTP
+    │
+▼
+API Gateway
+    │
+▼
+Core Engine
+    │
+▼
+Knowledge Graph
+    │
+▼
+Plugins
+
+
+---
+
+Base URL
+
+Development
+
+http://localhost:4000/api/v1
+
+Production
+
+https://api.ohira.dev/v1
+
+
+---
+
+Authentication
+
+MVP
+
+No authentication for local development.
+
+
+
+---
+
+Future
+
+Support:
+
+API Keys
+
+OAuth 2.1
+
+GitHub Login
+
+Clerk
+
+Organization Tokens
+
+
+
+---
+
+Standard Response Format
+
+Every successful response:
+
+{
+  "success": true,
+  "data": {},
+  "meta": {
+    "version": "1.0.0",
+    "timestamp": "2026-08-06T19:00:00Z"
+  }
+}
+
+
+---
+
+Errors:
+
+{
+  "success": false,
+  "error": {
+    "code": "PLUGIN_NOT_FOUND",
+    "message": "Plugin does not exist."
+  }
+}
+
+
+---
+
+Health Endpoint
+
+GET /health
+
+Returns:
+
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "uptime": 12345
+}
+
+
+---
+
+Status Endpoint
+
+GET /status
+
+Returns:
+
+{
+  "project": "Smart Property",
+  "framework": "Next.js",
+  "database": "MySQL",
+  "orm": "Prisma",
+  "analysis": {
+    "healthScore": 92,
+    "modules": 11
+  }
+}
+
+
+---
+
+Analyze Project
+
+POST /analysis
+
+Request:
+
+{
+  "path": "/projects/smart-property"
+}
+
+Response:
+
+{
+  "analysisId": "anl_12345",
+  "status": "completed"
+}
+
+
+---
+
+Context Endpoint
+
+GET /context
+
+Returns AI-ready context:
+
+{
+  "project": "Smart Property",
+  "stack": {
+    "framework": "Next.js",
+    "runtime": "Node.js",
+    "database": "MySQL",
+    "orm": "Prisma"
+  },
+  "modules": [
+    "Users",
+    "Properties",
+    "Bookings",
+    "Payments"
+  ]
+}
+
+
+---
+
+Reports
+
+GET /reports
+
+Returns:
+
+[
+  {
+    "name": "Architecture Report",
+    "format": "markdown"
+  },
+  {
+    "name": "Health Report",
+    "format": "json"
+  }
+]
+
+
+---
+
+Download:
+
+GET /reports/{id}
+
+
+---
+
+Plugins
+
+List:
+
+GET /plugins
+
+Install:
+
+POST /plugins/install
+
+Update:
+
+POST /plugins/update
+
+Remove:
+
+DELETE /plugins/{pluginId}
+
+
+---
+
+Knowledge Graph
+
+GET /graph
+
+Returns:
+
+Nodes
+
+Relationships
+
+Metadata
+
+
+Future support may include graph traversal and filtering.
+
+
+---
+
+Metrics
+
+GET /metrics
+
+Example:
+
+{
+  "modules": 11,
+  "routes": 62,
+  "entities": 34,
+  "services": 17,
+  "plugins": 8
+}
+
+
+---
+
+Search
+
+GET /search?q=property
+
+Returns matching:
+
+Modules
+
+Routes
+
+Entities
+
+Reports
+
+Documentation
+
+
+
+---
+
+Project Endpoint
+
+GET /projects/current
+
+Returns:
+
+{
+  "name": "Smart Property",
+  "language": "TypeScript",
+  "packageManager": "pnpm"
+}
+
+Future versions may support multiple projects and workspaces.
+
+
+---
+
+Webhooks (Future)
+
+Applications may subscribe to events:
+
+analysis.completed
+plugin.installed
+report.generated
+graph.updated
+health.changed
+
+Example payload:
+
+{
+  "event": "analysis.completed",
+  "project": "Smart Property",
+  "analysisId": "anl_12345"
+}
+
+
+---
+
+SDK Support
+
+Official SDKs are planned for:
+
+TypeScript
+
+JavaScript
+
+Python
+
+Go
+
+Java
+
+.NET
+
+
+Example (TypeScript):
+
+import { OhiraClient } from "@ohira/sdk";
+
+const client = new OhiraClient();
+
+const status = await client.status();
+
+
+---
+
+API Versioning
+
+Versioning is URL-based:
+
+/v1
+/v2
+
+Older versions remain supported during a defined deprecation period.
+
+
+---
+
+Rate Limiting
+
+Local
+
+Unlimited.
+
+Cloud
+
+Example defaults:
+
+100 requests/minute (Free)
+
+Higher limits for paid plans
+
+
+
+---
+
+Security
+
+HTTPS in production.
+
+Input validation.
+
+Standard HTTP status codes.
+
+No sensitive project data exposed without authorization.
+
+Future support for fine-grained access control.
+
+
+
+---
+
+Integration Examples
+
+Smart Property
+
+Consume Ohira to display:
+
+Project health
+
+Progress reports
+
+Architecture summaries
+
+
+
+---
+
+VS Code Extension
+
+Display:
+
+Current project summary
+
+Detected technologies
+
+AI context
+
+Module navigation
+
+
+
+---
+
+GitHub Actions
+
+Trigger analysis on every pull request:
+
+- name: Analyze Project
+  run: ohira analyze
+
+Future integrations can post results back to pull requests.
+
+
+---
+
+Performance Goals
+
+Health endpoint: < 50 ms
+
+Status endpoint: < 100 ms
+
+Context endpoint: < 200 ms
+
+Cached analysis results where possible
+
+Support concurrent requests without blocking analysis
+
+
+
+---
+
+Future API Expansion
+
+GraphQL endpoint
+
+Streaming analysis
+
+Server-Sent Events (SSE)
+
+WebSocket support
+
+Multi-project workspaces
+
+Organization management
+
+Plugin marketplace API
+
+AI conversation endpoint
+
+Enterprise administration API
+
+
+
+---
+
+Guiding Principle
+
+> "Every endpoint should return knowledge, not just data."
+
+
+
+The Ohira API is not simply a REST service; it is the primary interface through which software projects become understandable to people, applications, and AI systems.
+
+
+---
+
+MVP Endpoints
+
+For Ohira v0.1, the required endpoints are:
+
+GET /health
+
+GET /status
+
+POST /analysis
+
+GET /context
+
+GET /reports
+
+GET /plugins
+
+GET /metrics
+
+GET /projects/current
+
+
+These provide enough functionality for Ohira to serve as the intelligence layer for Smart Property and other early adopter projects.
