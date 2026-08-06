@@ -1,0 +1,485 @@
+OHIRA-0007
+
+CLI & Developer Experience Specification
+
+Project: Ohira
+
+Document ID: OHIRA-0007
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+The Ohira Command Line Interface (CLI) is the primary interface between developers and the Ohira platform.
+
+It should be:
+
+Fast
+
+Simple
+
+Discoverable
+
+Scriptable
+
+Consistent
+
+AI-friendly
+
+
+The CLI should feel like a natural part of a developer's workflow, similar to tools like Git, Docker, Prisma, and npm.
+
+
+---
+
+Design Principles
+
+Developer First
+
+Every command should solve a real developer problem with minimal configuration.
+
+
+---
+
+Convention Over Configuration
+
+Ohira should detect common project structures automatically.
+
+Example:
+
+ohira analyze
+
+No configuration should be required for most projects.
+
+
+---
+
+Human + Machine Friendly
+
+Every command supports multiple output formats:
+
+ohira status
+
+ohira status --json
+
+ohira status --yaml
+
+ohira status --markdown
+
+
+---
+
+Installation
+
+Global installation:
+
+pnpm add -g ohira
+
+or
+
+npm install -g ohira
+
+or
+
+bun add -g ohira
+
+No lock-in to a single package manager.
+
+
+---
+
+Initialization
+
+Initialize a project:
+
+ohira init
+
+Creates:
+
+.ohira/
+    config.json
+    cache/
+    reports/
+    graph/
+
+
+---
+
+Configuration
+
+Configuration file:
+
+ohira.config.ts
+
+Example:
+
+export default {
+  project: {
+    name: "Smart Property",
+    description: "AI-first PropTech Platform"
+  },
+
+  plugins: [
+    "prisma",
+    "next",
+    "docker",
+    "clerk"
+  ],
+
+  output: {
+    reports: "./reports"
+  }
+}
+
+
+---
+
+Core Commands
+
+Analyze
+
+ohira analyze
+
+Runs:
+
+Scanner
+
+Collectors
+
+Plugins
+
+Knowledge Graph
+
+Reports
+
+
+
+---
+
+Status
+
+ohira status
+
+Example output:
+
+Project: Smart Property
+
+Framework: Next.js
+
+Runtime: Node.js
+
+ORM: Prisma
+
+Database: MySQL
+
+Authentication: Clerk
+
+Modules: 9
+
+Health Score: 91%
+
+Analysis completed in 6.2 seconds
+
+
+---
+
+Doctor
+
+ohira doctor
+
+Checks:
+
+Missing dependencies
+
+Configuration issues
+
+Plugin compatibility
+
+Version conflicts
+
+
+Example:
+
+✓ Node.js detected
+
+✓ Prisma detected
+
+✓ Docker detected
+
+⚠ Missing plugin:
+@ohira/plugin-git
+
+
+---
+
+Report
+
+ohira report
+
+Generates:
+
+report.md
+
+report.json
+
+report.html
+
+
+---
+
+Context
+
+ohira context
+
+Produces AI-ready project context.
+
+
+---
+
+Graph
+
+ohira graph
+
+Displays a summary of the project's knowledge graph.
+
+Future versions may support interactive visualization.
+
+
+---
+
+Plugins
+
+List plugins:
+
+ohira plugins list
+
+Install:
+
+ohira plugins install prisma
+
+Update:
+
+ohira plugins update
+
+Remove:
+
+ohira plugins remove prisma
+
+
+---
+
+Cache
+
+ohira cache clear
+
+Removes cached analysis.
+
+
+---
+
+Upgrade
+
+ohira upgrade
+
+Updates the CLI and official plugins.
+
+
+---
+
+Output Formats
+
+Supported:
+
+--json
+
+--yaml
+
+--markdown
+
+--table
+
+--html
+
+This allows integration with scripts, CI/CD pipelines, and AI systems.
+
+
+---
+
+Interactive Mode
+
+When no arguments are provided:
+
+ohira
+
+Display an interactive menu:
+
+Welcome to Ohira
+
+1. Analyze Project
+2. View Status
+3. Generate Report
+4. AI Context
+5. Plugin Manager
+6. Doctor
+7. Settings
+
+This improves discoverability for new users.
+
+
+---
+
+Exit Codes
+
+Standard exit codes:
+
+Code	Meaning
+
+0	Success
+1	General error
+2	Invalid command
+3	Configuration error
+4	Plugin error
+5	Analysis failed
+
+
+This makes Ohira automation-friendly.
+
+
+---
+
+Logging
+
+Levels:
+
+--quiet
+
+--info
+
+--verbose
+
+--debug
+
+Verbose mode helps diagnose issues during development.
+
+
+---
+
+Performance Goals
+
+CLI startup under 200 ms
+
+Analyze medium projects in under 30 seconds
+
+Incremental re-analysis under 5 seconds after small changes
+
+Minimal memory usage
+
+
+
+---
+
+AI Commands (Future)
+
+ohira explain
+
+ohira summarize
+
+ohira architecture
+
+ohira review
+
+ohira risks
+
+ohira roadmap
+
+These commands will use the Knowledge Graph to provide higher-level insights.
+
+
+---
+
+Developer Experience Goals
+
+A new developer should be able to:
+
+pnpm add -g ohira
+
+cd my-project
+
+ohira init
+
+ohira analyze
+
+ohira status
+
+ohira report
+
+and understand a project within minutes.
+
+
+---
+
+Future Enhancements
+
+Shell auto-completion (Bash, Zsh, Fish, PowerShell)
+
+Interactive TUI dashboard
+
+Watch mode (ohira analyze --watch)
+
+Live architecture updates
+
+AI-assisted troubleshooting
+
+Workspace management for multiple projects
+
+
+
+---
+
+Guiding Principle
+
+> "Powerful by default. Flexible when needed."
+
+
+
+The CLI should hide complexity from beginners while exposing advanced capabilities for experienced developers and automation workflows.
+
+
+---
+
+Milestone Deliverables
+
+The CLI for Ohira v0.1 must include:
+
+ohira init
+
+ohira analyze
+
+ohira status
+
+ohira doctor
+
+ohira report
+
+ohira context
+
+Basic plugin management
+
+JSON and Markdown output
+
+Configuration support
+
+
+
+---
+
+Next Document
+
+OHIRA-0008 — REST API & Integration Specification
+
+This document will define the HTTP API, request/response models, authentication, versioning, webhooks, SDK integration, and how external applications—including Smart Property, IDE extensions, dashboards, and AI agents—can consume Ohira's intelligence. This API will be the backbone for all future integrations.
