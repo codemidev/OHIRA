@@ -1,0 +1,696 @@
+Perfect. This is arguably the most important technical document in Ohira. If the Vision document explains why Ohira exists, this document explains how it works internally.
+
+
+---
+
+OHIRA-0009
+
+Core Engine & Analysis Pipeline Specification
+
+Project: Ohira
+
+Document ID: OHIRA-0009
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+The Ohira Core Engine is responsible for orchestrating every analysis performed by the platform.
+
+It coordinates:
+
+Project discovery
+
+Plugin execution
+
+Data collection
+
+Knowledge graph generation
+
+Report generation
+
+AI context generation
+
+Incremental updates
+
+Caching
+
+Error recovery
+
+
+The Core Engine should remain framework-agnostic, lightweight, and extensible.
+
+
+---
+
+Core Responsibilities
+
+The Core Engine must:
+
+Discover projects
+
+Load configuration
+
+Load plugins
+
+Execute analysis pipeline
+
+Build the Knowledge Graph
+
+Generate reports
+
+Generate AI Context
+
+Expose results to APIs and CLI
+
+
+It must never contain technology-specific logic.
+
+
+---
+
+High-Level Flow
+
+Developer
+    │
+ohira analyze
+    │
+    ▼
+Configuration Loader
+    │
+    ▼
+Project Scanner
+    │
+    ▼
+Plugin Manager
+    │
+    ▼
+Collectors
+    │
+    ▼
+Normalizers
+    │
+    ▼
+Knowledge Graph Builder
+    │
+    ▼
+Report Generator
+    │
+    ▼
+AI Context Engine
+    │
+    ▼
+CLI / API / Dashboard
+
+
+---
+
+Analysis Pipeline
+
+The pipeline consists of eight stages.
+
+Stage 1 — Configuration
+
+Loads:
+
+ohira.config.ts
+
+package.json
+
+Environment variables
+
+CLI flags
+
+
+Output:
+
+{
+  "projectRoot": "...",
+  "plugins": [],
+  "cache": true
+}
+
+
+---
+
+Stage 2 — Project Discovery
+
+The Scanner detects:
+
+Language
+
+Runtime
+
+Framework
+
+Package Manager
+
+Repository
+
+Docker
+
+ORM
+
+CI/CD
+
+
+Example:
+
+Node.js
+
+↓
+
+Next.js
+
+↓
+
+Prisma
+
+↓
+
+Docker
+
+↓
+
+Git
+
+
+---
+
+Stage 3 — Plugin Resolution
+
+Determine which plugins are applicable.
+
+Example:
+
+package.json
+
+↓
+
+Next Plugin
+
+Prisma Plugin
+
+Docker Plugin
+
+Git Plugin
+
+Plugins that do not support the current project are skipped.
+
+
+---
+
+Stage 4 — Collection
+
+Each plugin extracts structured information.
+
+Example:
+
+Prisma:
+
+Models
+
+Enums
+
+Relations
+
+Migrations
+
+
+Git:
+
+Branch
+
+Commits
+
+Contributors
+
+
+Docker:
+
+Services
+
+Images
+
+Ports
+
+
+
+---
+
+Stage 5 — Normalization
+
+Different technologies describe similar concepts differently.
+
+Example:
+
+Prisma
+
+model User
+
+Drizzle
+
+table users
+
+Both become:
+
+Entity(User)
+
+Normalization ensures the Knowledge Graph uses a common vocabulary.
+
+
+---
+
+Stage 6 — Graph Construction
+
+Collected entities become nodes.
+
+Relationships become edges.
+
+Example:
+
+User
+
+owns
+
+Booking
+
+references
+
+Property
+
+
+---
+
+Stage 7 — Insight Generation
+
+The engine derives higher-level information.
+
+Examples:
+
+Unused services
+
+Missing documentation
+
+Circular dependencies
+
+Authentication coverage
+
+Technical debt indicators
+
+Architecture summaries
+
+
+
+---
+
+Stage 8 — Output Generation
+
+Outputs include:
+
+JSON
+
+Markdown
+
+HTML
+
+AI Context
+
+REST responses
+
+
+
+---
+
+Plugin Execution
+
+Plugins execute independently.
+
+Core
+
+↓
+
+Plugin Manager
+
+↓
+
+Git Plugin
+
+↓
+
+Prisma Plugin
+
+↓
+
+Docker Plugin
+
+↓
+
+Next Plugin
+
+Each plugin returns:
+
+KnowledgeNode[]
+
+The Core combines all nodes into one graph.
+
+
+---
+
+Plugin Scheduling
+
+The scheduler classifies plugins into three groups:
+
+Discovery Plugins
+
+Examples:
+
+Node
+
+Git
+
+
+Run first.
+
+
+---
+
+Dependency Plugins
+
+Examples:
+
+Prisma
+
+Docker
+
+Clerk
+
+
+Run after discovery.
+
+
+---
+
+Insight Plugins
+
+Examples:
+
+Health
+
+Documentation
+
+Security
+
+
+Run last.
+
+
+---
+
+Parallel Execution
+
+Independent plugins may run concurrently.
+
+Example:
+
+Git Plugin
+
+Prisma Plugin
+
+Docker Plugin
+
+↓
+
+Parallel
+
+↓
+
+Merge Results
+
+This reduces total analysis time.
+
+
+---
+
+Cache Manager
+
+Ohira caches expensive operations.
+
+Examples:
+
+package.json parsing
+
+Git metadata
+
+Prisma schema parsing
+
+Docker inspection
+
+
+Cache is invalidated only when relevant files change.
+
+
+---
+
+Incremental Analysis
+
+Instead of rebuilding everything:
+
+schema.prisma changed
+
+↓
+
+Only Prisma Plugin reruns
+
+↓
+
+Graph updates
+
+↓
+
+Reports regenerate
+
+This keeps repeated analyses fast.
+
+
+---
+
+Error Recovery
+
+Errors should never stop the entire pipeline.
+
+If a plugin fails:
+
+Plugin Error
+
+↓
+
+Log
+
+↓
+
+Disable Plugin
+
+↓
+
+Continue Analysis
+
+The user receives a warning, but analysis completes whenever possible.
+
+
+---
+
+Dependency Injection
+
+The Core provides shared services through dependency injection.
+
+Available services:
+
+Logger
+
+Cache
+
+File System
+
+Event Bus
+
+Configuration
+
+Metrics
+
+
+Plugins request services rather than creating their own implementations.
+
+
+---
+
+Event Bus
+
+Major events emitted by the Core:
+
+analysis.started
+
+plugin.loaded
+
+plugin.failed
+
+graph.updated
+
+report.generated
+
+analysis.completed
+
+Future plugins can subscribe to these events.
+
+
+---
+
+Metrics Collection
+
+The Core tracks:
+
+Analysis duration
+
+Plugin execution time
+
+Files analyzed
+
+Nodes generated
+
+Relationships created
+
+Cache hit rate
+
+Memory usage
+
+
+These metrics help optimize performance over time.
+
+
+---
+
+Concurrency Model
+
+Rules:
+
+Independent plugins execute in parallel.
+
+Dependent plugins execute sequentially.
+
+Graph updates are synchronized.
+
+Shared resources are protected from race conditions.
+
+
+This balances performance with correctness.
+
+
+---
+
+Logging
+
+Every analysis receives a unique ID.
+
+Example:
+
+Analysis ID:
+anl_20260806_001
+
+Log levels:
+
+ERROR
+
+WARN
+
+INFO
+
+DEBUG
+
+TRACE
+
+
+This simplifies troubleshooting and auditing.
+
+
+---
+
+Future Pipeline Enhancements
+
+Planned improvements include:
+
+Distributed analysis workers
+
+Remote repository analysis
+
+Background watch mode
+
+Real-time architecture updates
+
+AI-assisted insight plugins
+
+Incremental graph synchronization
+
+Multi-project orchestration
+
+
+
+---
+
+MVP Responsibilities
+
+For Ohira v0.1, the Core Engine must support:
+
+Configuration loading
+
+Project scanning
+
+Plugin discovery
+
+Sequential and parallel plugin execution
+
+Knowledge Graph construction
+
+Report generation
+
+AI Context generation
+
+Incremental analysis
+
+Error isolation
+
+Basic metrics
+
+
+
+---
+
+Engineering Guidelines
+
+The Core Engine should:
+
+Remain under active test coverage.
+
+Expose stable public interfaces.
+
+Avoid framework-specific assumptions.
+
+Minimize startup time.
+
+Support future distributed execution without major redesign.
+
+
+
+---
+
+Guiding Principle
+
+> "The Core Engine coordinates intelligence; plugins provide expertise."
+
+
+
+This separation ensures Ohira can continue to support new technologies, frameworks, and workflows without requiring changes to its central architecture.
