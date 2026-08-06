@@ -1,0 +1,603 @@
+OHIRA-0003
+
+System Architecture Document (SAD)
+
+Project: Ohira
+
+Document ID: OHIRA-0003
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+This document defines the high-level architecture of Ohira, the responsibilities of each subsystem, and how data flows from a software project into a structured knowledge model that can be consumed by developers, APIs, dashboards, and AI systems.
+
+The architecture emphasizes:
+
+Extensibility
+
+Performance
+
+Plugin-first design
+
+AI compatibility
+
+Framework independence
+
+
+
+---
+
+Architectural Principles
+
+1. Local-First
+
+By default, Ohira analyzes projects locally. Source code and project data remain on the developer's machine unless explicitly shared.
+
+
+---
+
+2. Plugin-Driven
+
+The core engine contains no framework-specific logic. Support for technologies like Next.js, Prisma, Docker, and Git is provided through plugins.
+
+
+---
+
+3. AI-Native
+
+Every component produces structured outputs that are easy for AI assistants to consume.
+
+
+---
+
+4. Knowledge-Centric
+
+Ohira transforms files into a graph of meaningful entities and relationships rather than treating the project as a collection of directories.
+
+
+---
+
+High-Level Architecture
+
++----------------------+
+                        |      CLI / API       |
+                        +----------+-----------+
+                                   |
+                                   v
+                     +---------------------------+
+                     |      Ohira Core Engine    |
+                     +---------------------------+
+                                   |
+          +------------+-----------+------------+------------+
+          |            |           |            |            |
+          v            v           v            v            v
+   Project Scanner  Plugin Loader Analyzer  Reporter  Context Engine
+          |            |           |            |            |
+          +------------+-----------+------------+------------+
+                                   |
+                                   v
+                       +------------------------+
+                       |   Knowledge Graph      |
+                       +------------------------+
+                                   |
+            +----------------------+----------------------+
+            |                      |                      |
+            v                      v                      v
+      REST API               Dashboard             AI Clients
+
+
+---
+
+Core Components
+
+1. CLI
+
+The CLI is the primary entry point for developers.
+
+Responsibilities:
+
+Initialize Ohira
+
+Trigger analysis
+
+Generate reports
+
+Manage plugins
+
+Display diagnostics
+
+
+Example:
+
+ohira init
+ohira analyze
+ohira report
+ohira doctor
+ohira context
+
+
+---
+
+2. REST API
+
+Provides programmatic access to Ohira's knowledge.
+
+Endpoints:
+
+GET  /health
+GET  /status
+GET  /context
+GET  /report
+GET  /plugins
+POST /analyze
+
+Future versions may expose GraphQL alongside REST.
+
+
+---
+
+3. Core Engine
+
+The orchestration layer responsible for coordinating every subsystem.
+
+Responsibilities:
+
+Load configuration
+
+Discover plugins
+
+Execute analysis pipeline
+
+Handle errors
+
+Manage caching
+
+Persist knowledge
+
+
+The Core Engine should remain lightweight and stable.
+
+
+---
+
+4. Project Scanner
+
+Discovers the project environment.
+
+Detects:
+
+Root directory
+
+Package manager
+
+Language
+
+Framework
+
+Repository
+
+Configuration files
+
+
+Example detection:
+
+package.json
+next.config.ts
+tsconfig.json
+prisma/schema.prisma
+docker-compose.yml
+.git
+
+
+---
+
+5. Plugin Loader
+
+Discovers and loads installed plugins.
+
+Responsibilities:
+
+Validate compatibility
+
+Resolve dependencies
+
+Register analyzers
+
+Handle plugin lifecycle
+
+Isolate plugin failures
+
+
+Plugin lifecycle:
+
+Discover
+↓
+
+Validate
+↓
+
+Load
+↓
+
+Initialize
+↓
+
+Analyze
+↓
+
+Unload
+
+
+---
+
+6. Analyzer Pipeline
+
+The heart of Ohira.
+
+Pipeline:
+
+Project
+
+↓
+
+Scanner
+
+↓
+
+Plugins
+
+↓
+
+Collectors
+
+↓
+
+Normalizers
+
+↓
+
+Knowledge Graph
+
+Every stage enriches the project's understanding.
+
+
+---
+
+7. Collectors
+
+Collectors extract structured information from specific technologies.
+
+Examples:
+
+Git Collector
+
+Extracts:
+
+Branch
+
+Commits
+
+Contributors
+
+Tags
+
+
+
+---
+
+Prisma Collector
+
+Extracts:
+
+Models
+
+Relations
+
+Enums
+
+Migrations
+
+
+
+---
+
+Docker Collector
+
+Extracts:
+
+Containers
+
+Images
+
+Networks
+
+Volumes
+
+Services
+
+
+
+---
+
+Next.js Collector
+
+Extracts:
+
+Routes
+
+App Router structure
+
+Middleware
+
+Layouts
+
+
+
+---
+
+Clerk Collector
+
+Extracts:
+
+Authentication configuration
+
+Middleware usage
+
+Protected routes
+
+
+
+---
+
+8. Knowledge Graph
+
+The Knowledge Graph is the central data model.
+
+Everything discovered by Ohira becomes interconnected entities.
+
+Example:
+
+Project
+│
+├── Framework
+├── Routes
+├── APIs
+├── Database
+├── Models
+├── Services
+├── Containers
+├── Environment
+└── Documentation
+
+Relationships enable advanced queries such as:
+
+Which APIs use this model?
+
+Which routes require authentication?
+
+Which services depend on Redis?
+
+Which Docker service exposes this API?
+
+
+
+---
+
+9. Report Generator
+
+Generates human-readable outputs.
+
+Supported formats:
+
+Markdown
+
+JSON
+
+HTML
+
+
+Future:
+
+PDF
+
+OpenAPI summaries
+
+Architecture diagrams
+
+
+
+---
+
+10. AI Context Engine
+
+Produces optimized context for AI assistants.
+
+Responsibilities:
+
+Compress project information
+
+Remove redundancy
+
+Generate structured summaries
+
+Respect token limits
+
+Support different AI providers
+
+
+Output example:
+
+{
+  "project": "Smart Property",
+  "framework": "Next.js",
+  "database": "MySQL",
+  "orm": "Prisma",
+  "authentication": "Clerk",
+  "modules": [
+    "Users",
+    "Properties",
+    "Bookings",
+    "Payments"
+  ]
+}
+
+
+---
+
+Plugin Architecture
+
+Each plugin implements a common interface.
+
+interface OhiraPlugin {
+  id: string;
+  name: string;
+  version: string;
+
+  supports(project: Project): boolean;
+
+  analyze(context: AnalysisContext): Promise<KnowledgeNode[]>;
+}
+
+This ensures consistency across all integrations.
+
+
+---
+
+Data Flow
+
+Developer
+
+↓
+
+ohira analyze
+
+↓
+
+Core Engine
+
+↓
+
+Project Scanner
+
+↓
+
+Plugin Loader
+
+↓
+
+Collectors
+
+↓
+
+Knowledge Graph
+
+↓
+
+Reporter
+
+↓
+
+CLI / REST API / Dashboard / AI
+
+
+---
+
+Error Handling Strategy
+
+Ohira should never fail because one plugin fails.
+
+Instead:
+
+Log the error
+
+Disable the failing plugin for the session
+
+Continue analysis
+
+Report the issue to the user
+
+
+
+---
+
+Caching Strategy
+
+To improve performance:
+
+Cache dependency analysis
+
+Cache Git metadata
+
+Cache framework detection
+
+Perform incremental analysis when possible
+
+
+
+---
+
+Security Considerations
+
+Local-first by default.
+
+Explicit opt-in for cloud synchronization.
+
+Sensitive values in .env files are masked.
+
+Plugins operate under a permission model in future versions.
+
+
+
+---
+
+Scalability
+
+The architecture is designed to scale from:
+
+Small personal repositories
+
+Medium startup projects
+
+Large enterprise monorepos
+
+
+Future distributed analysis workers can be added without redesigning the core.
+
+
+---
+
+Architecture Goals
+
+The system should be:
+
+Modular
+
+Extensible
+
+Testable
+
+Performant
+
+Secure
+
+AI-ready
+
+Framework-agnostic
+
+
+
+---
+
+Architecture Motto
+
+> "One Core. Many Plugins. Infinite Projects."
+
+
+
+This principle ensures that Ohira remains lightweight while supporting an ever-growing ecosystem of languages, frameworks, and tools.
