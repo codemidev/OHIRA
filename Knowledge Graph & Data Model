@@ -1,0 +1,523 @@
+OHIRA-0006
+
+Knowledge Graph & Data Model
+
+Project: Ohira
+
+Document ID: OHIRA-0006
+
+Version: 1.0
+
+Status: Founder's Draft
+
+
+---
+
+Purpose
+
+The Knowledge Graph is Ohira's core intelligence model.
+
+Its purpose is to transform software projects from collections of files into structured, interconnected knowledge.
+
+Rather than asking:
+
+> "Which files exist?"
+
+
+
+Ohira answers:
+
+What features exist?
+
+Which APIs belong to a module?
+
+Which database models support a feature?
+
+Which routes require authentication?
+
+Which services communicate together?
+
+What business capability does this module implement?
+
+
+
+---
+
+Design Philosophy
+
+Traditional tools understand files.
+
+Ohira understands software systems.
+
+Everything becomes a graph of entities connected by meaningful relationships.
+
+
+---
+
+Core Concepts
+
+The Knowledge Graph is composed of:
+
+Nodes (entities)
+
+Relationships (edges)
+
+Properties (metadata)
+
+Context (analysis results)
+
+
+Project
+   │
+   ├── Modules
+   ├── APIs
+   ├── Database
+   ├── Infrastructure
+   ├── Documentation
+   └── Features
+
+
+---
+
+Primary Node Types
+
+Project
+
+Represents the software project.
+
+Example:
+
+{
+  "id": "project",
+  "name": "Smart Property",
+  "type": "Project"
+}
+
+
+---
+
+Module
+
+Logical business capabilities.
+
+Examples:
+
+Authentication
+
+Users
+
+Properties
+
+Bookings
+
+Payments
+
+Trust System
+
+Vendors
+
+
+A module may contain:
+
+Routes
+
+Services
+
+Models
+
+APIs
+
+Events
+
+
+
+---
+
+Feature
+
+Represents a user-facing capability.
+
+Examples:
+
+User Registration
+
+Property Search
+
+Rent Payment
+
+Token Purchase
+
+Estate Bill Payment
+
+
+
+---
+
+Route
+
+Represents an application endpoint.
+
+Example:
+
+GET /api/users
+
+POST /api/properties
+
+PATCH /api/bookings/:id
+
+Metadata:
+
+HTTP Method
+
+Authentication
+
+Module
+
+Version
+
+
+
+---
+
+Service
+
+Contains business logic.
+
+Examples:
+
+PaymentService
+
+PropertyService
+
+TrustService
+
+BookingService
+
+
+---
+
+Entity
+
+Represents persistent business objects.
+
+Examples:
+
+User
+
+Property
+
+Booking
+
+Payment
+
+Token
+
+Vendor
+
+Usually mapped from Prisma models or ORM schemas.
+
+
+---
+
+Database
+
+Represents the underlying datastore.
+
+Metadata:
+
+Provider
+
+Version
+
+ORM
+
+Connection strategy
+
+
+
+---
+
+Plugin
+
+Represents an Ohira plugin.
+
+Examples:
+
+Prisma Plugin
+
+Docker Plugin
+
+Git Plugin
+
+Next Plugin
+
+Plugins contribute knowledge to the graph.
+
+
+---
+
+Infrastructure
+
+Represents runtime components.
+
+Examples:
+
+Docker
+
+Redis
+
+MySQL
+
+Nginx
+
+Kubernetes
+
+
+
+---
+
+Environment
+
+Captures execution environments.
+
+Examples:
+
+Development
+
+Staging
+
+Production
+
+
+
+---
+
+Relationships
+
+Nodes are connected through typed relationships.
+
+Examples:
+
+Project
+    │
+contains
+    │
+Module
+
+Module
+
+owns
+
+Route
+
+Route
+
+calls
+
+Service
+
+Service
+
+uses
+
+Entity
+
+Entity
+
+stored_in
+
+Database
+
+Infrastructure
+
+hosts
+
+API
+
+These relationships allow traversal of the entire system.
+
+
+---
+
+Graph Example
+
+Smart Property
+│
+├── Users Module
+│      │
+│      ├── UserService
+│      ├── User Routes
+│      └── User Entity
+│
+├── Properties Module
+│      │
+│      ├── PropertyService
+│      ├── Property Routes
+│      └── Property Entity
+│
+├── Payments Module
+│
+└── Trust Module
+
+
+---
+
+Metadata
+
+Every node includes metadata such as:
+
+{
+  "createdAt": "...",
+  "updatedAt": "...",
+  "plugin": "@ohira/plugin-prisma",
+  "confidence": 0.99,
+  "source": "schema.prisma"
+}
+
+This supports traceability and debugging.
+
+
+---
+
+AI Context Model
+
+The graph can be summarized into AI-friendly context.
+
+Example:
+
+{
+  "project": "Smart Property",
+  "stack": {
+    "framework": "Next.js",
+    "runtime": "Node.js",
+    "database": "MySQL",
+    "orm": "Prisma",
+    "authentication": "Clerk"
+  },
+  "modules": [
+    "Users",
+    "Properties",
+    "Bookings",
+    "Payments",
+    "Trust"
+  ]
+}
+
+This compact representation allows AI assistants to understand the project without scanning the entire repository.
+
+
+---
+
+Queries
+
+The Knowledge Graph should support queries such as:
+
+Which modules use Prisma?
+
+Which routes require authentication?
+
+Which services depend on Docker?
+
+Which features are incomplete?
+
+Which entities are unused?
+
+Which APIs expose payment functionality?
+
+
+Future versions may expose these through a graph query API.
+
+
+---
+
+Incremental Updates
+
+The graph should not be rebuilt from scratch for every change.
+
+Instead:
+
+1. Detect file changes.
+
+
+2. Re-analyze affected components.
+
+
+3. Update only impacted nodes and relationships.
+
+
+4. Preserve unchanged knowledge.
+
+
+
+This enables fast analysis on large projects.
+
+
+---
+
+Storage
+
+Initially, the graph can be stored as JSON files.
+
+Future options include:
+
+SQLite
+
+PostgreSQL
+
+Neo4j
+
+Amazon Neptune
+
+Other graph databases
+
+
+The storage layer should remain abstract so implementations can evolve without changing the graph model.
+
+
+---
+
+Knowledge Levels
+
+Ohira classifies information by confidence:
+
+Observed – directly extracted from project files.
+
+Derived – inferred from relationships.
+
+Declared – provided by the developer through configuration.
+
+Generated – produced by AI or higher-level analysis.
+
+
+This helps users distinguish facts from inferences.
+
+
+---
+
+Future Enhancements
+
+The Knowledge Graph will eventually support:
+
+Cross-repository relationships
+
+Team ownership
+
+Architecture evolution over time
+
+Dependency impact analysis
+
+Security findings
+
+Technical debt visualization
+
+Live project health scoring
+
+AI-assisted architectural recommendations
+
+
+
+---
+
+Guiding Principle
+
+> "Files describe software. Knowledge explains software."
